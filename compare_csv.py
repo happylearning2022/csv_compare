@@ -1,21 +1,28 @@
-import csv
+file1_path = 'file1.txt'
+file2_path = 'file2.txt'
 
-def compare_csv_files(file1, file2):
-    with open(file1, 'r') as csv_file1, open(file2, 'r') as csv_file2:
-        reader1 = csv.reader(csv_file1)
-        reader2 = csv.reader(csv_file2)
-        
-        # Assuming both CSV files have the same number of rows and columns
-        for row1, row2 in zip(reader1, reader2):
-            for col1, col2 in zip(row1, row2):
-                if col1 != col2:
-                    print(f"Difference found: {col1} (File 1) - {col2} (File 2)")
-            # Check for differences in row length
-            if len(row1) != len(row2):
-                print("Row length differs between files.")
-            # You can add more detailed comparison logic here
-            
-# Example usage:
-file1_path = 'file1.csv'
-file2_path = 'file2.csv'
-compare_csv_files(file1_path, file2_path)
+with open(file1_path, 'r') as file1, open(file2_path, 'r') as file2:
+    lines_file1 = file1.readlines()
+    lines_file2 = file2.readlines()
+
+    if len(lines_file1) != len(lines_file2):
+        print("The files have different numbers of lines. Cannot compare.")
+    else:
+        mismatches = []
+        for line_num, (line1, line2) in enumerate(zip(lines_file1, lines_file2), start=1):
+            fields1 = line1.strip().split('|')
+            fields2 = line2.strip().split('|')
+
+            if len(fields1) != len(fields2):
+                mismatches.append(f"Line {line_num}: Number of fields differ")
+            else:
+                for col_num, (field1, field2) in enumerate(zip(fields1, fields2), start=1):
+                    if field1 != field2:
+                        mismatches.append(f"Line {line_num}, Column {col_num}: '{field1}' != '{field2}'")
+
+        if mismatches:
+            print("Mismatches found:")
+            for mismatch in mismatches:
+                print(mismatch)
+        else:
+            print("No mismatches found. Files are identical.")
